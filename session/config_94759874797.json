@@ -1,0 +1,30 @@
+{
+  "AUTO_VIEW_STATUS": "true",
+  "AUTO_LIKE_STATUS": "true",
+  "AUTO_RECORDING": "true",
+  "AUTO_LIKE_EMOJI": [
+    "💥",
+    "👍",
+    "😍",
+    "💗",
+    "🎈",
+    "🎉",
+    "🥳",
+    "😎",
+    "🚀",
+    "🔥"
+  ],
+  "PREFIX": ".",
+  "BUTTON": "off",
+  "MAX_RETRIES": 3,
+  "GROUP_INVITE_LINK": "https://chat.whatsapp.com/CWqADEfUFj77nMEPE2ctZ2?mode=AC_C",
+  "ADMIN_LIST_PATH": "./admin.json",
+  "RCD_IMAGE_PATH": "./hime-crunchyroll.jpg",
+  "NEWSLETTER_JID": "120363396379901844@newsletter",
+  "NEWSLETTER_MESSAGE_ID": "428",
+  "OTP_EXPIRY": 300000,
+  "NEWS_JSON_URL": "https://raw.githubusercontent.com/datbase/refs/heads/main/ws.json",
+  "OWNER_NUMBER": "94714857323",
+  "CHANNEL_LINK": "https://whatsapp.com/channel/0029VaeyMWv3QxRu4hA6c33Z",
+  "CAPTION": "pqr"
+}
