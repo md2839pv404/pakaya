@@ -1,4 +1,4 @@
-name: Create Folders
+name: Create and Copy Files to Folders
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main  # Change as needed
 
 jobs:
-  create_folders:
+  create_and_copy:
     runs-on: ubuntu-latest
 
     steps:
@@ -18,28 +18,41 @@ jobs:
         with:
           node-version: '14'  # Specify the Node.js version
 
-      - name: Create session folders
+      - name: Create session folders and copy files
         run: |
-          echo "const fs = require('fs');" > createFolders.js
-          echo "const path = require('path');" >> createFolders.js
-          echo "const baseDir = path.join(__dirname, 'session');" >> createFolders.js
-          echo "const filesPerFolder = 500;" >> createFolders.js
-          echo "fs.promises.readdir(baseDir)" >> createFolders.js
-          echo "  .then(files => {" >> createFolders.js
-          echo "    const totalFiles = files.length;" >> createFolders.js
-          echo "    let folderIndex = 1;" >> createFolders.js
-          echo "" >> createFolders.js
-          echo "    for (let i = 0; i < totalFiles; i += filesPerFolder) {" >> createFolders.js
-          echo "      const folderName = folderIndex === 1 ? 'session' : \`session\${folderIndex}\`;" >> createFolders.js
-          echo "      const folderPath = path.join(baseDir, folderName);" >> createFolders.js
-          echo "      fs.promises.mkdir(folderPath, { recursive: true })" >> createFolders.js
-          echo "        .then(() => {" >> createFolders.js
-          echo "          console.log(\`Created folder: \${folderName}\`);" >> createFolders.js
-          echo "        });" >> createFolders.js
-          echo "      folderIndex++;" >> createFolders.js
-          echo "    }" >> createFolders.js
-          echo "  })" >> createFolders.js
-          echo "  .catch(err => console.error('Error reading directory:', err));" >> createFolders.js
+          const fs = require('fs');
+          const path = require('path');
 
-          # Run the Node.js script
-          node createFolders.js
+          const baseDir = path.join(__dirname, 'session');
+          const filesPerFolder = 500;
+
+          // Create session folders and copy files
+          fs.promises.readdir(baseDir)
+            .then(files => {
+              const totalFiles = files.length;
+              let folderIndex = 1;
+
+              for (let i = 0; i < totalFiles; i += filesPerFolder) {
+                const folderName = folderIndex === 1 ? 'session' : `session${folderIndex}`;
+                const folderPath = path.join(baseDir, folderName);
+
+                fs.promises.mkdir(folderPath, { recursive: true })
+                  .then(() => {
+                    console.log(`Created folder: ${folderName}`);
+                    
+                    // Copy files to the newly created folder
+                    const filesToCopy = files.slice(i, i + filesPerFolder);
+                    filesToCopy.forEach(file => {
+                      const srcFilePath = path.join(baseDir, file);
+                      const destFilePath = path.join(folderPath, file);
+                      
+                      fs.promises.copyFile(srcFilePath, destFilePath)
+                        .then(() => console.log(`Copied ${file} to ${folderName}`))
+                        .catch(err => console.error(`Error copying ${file}:`, err));
+                    });
+                  })
+                  .catch(err => console.error(`Error creating folder ${folderName}:`, err));
+                folderIndex++;
+              }
+            })
+            .catch(err => console.error('Error reading directory:', err));
