@@ -25,7 +25,12 @@ jobs:
           echo "async function createFoldersAndCopyFiles() {" >> createFolders.js
           echo "  try {" >> createFolders.js
           echo "    const files = await fs.readdir(baseDir);" >> createFolders.js
+          echo "    console.log('Files in directory:', files);" >> createFolders.js
           echo "    const totalFiles = files.length;" >> createFolders.js
+          echo "    if (totalFiles === 0) {" >> createFolders.js
+          echo "      console.log('No files to copy. Exiting.');" >> createFolders.js
+          echo "      return;" >> createFolders.js
+          echo "    }" >> createFolders.js
           echo "    let folderIndex = 1;" >> createFolders.js
           echo "" >> createFolders.js
           echo "    for (let i = 0; i < totalFiles; i += filesPerFolder) {" >> createFolders.js
@@ -58,7 +63,7 @@ jobs:
         run: |
           git config --local user.email "your-email@example.com"
           git config --local user.name "Your Name"
-          git add session*/  # Add all session folders dynamically
+          git add session*/  
           git commit -m "Add created session folders and copied files" || echo "No changes to commit"
           git push
         env:
