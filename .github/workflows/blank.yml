@@ -16,15 +16,14 @@ jobs:
       - name: Organize files
         run: |
           # Create folders for organized files
-          mkdir -p organized_files/folder_1
-          mkdir -p organized_files/folder_2
+          mkdir -p session_1
+          mkdir -p session_2
 
           # Move the first 500 files to folder_1
           ls session | head -n 500 | xargs -I {} mv session/{} session_1/
-
-          # Move the next 500 files to folder_2
           ls session | head -n 1000 | tail -n 500 | xargs -I {} mv session/{} session_2/
           ls session | head -n 1500 | tail -n 1000 | xargs -I {} mv session/{} session_3/
+
           # Optionally, you can add more folders and move more files as needed
 
       - name: Commit changes
