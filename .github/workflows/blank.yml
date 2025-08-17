@@ -1,70 +1,38 @@
-name: Create Session Folders and Copy Files
+name: Organize Files
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
-  create_folders:
+  organize:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v2
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '20' # Specify Node.js version 20
 
-      - name: Create createFolders.js
+      - name: Organize files
         run: |
-          echo "const fs = require('fs').promises;" > createFolders.js
-          echo "const path = require('path');" >> createFolders.js
-          echo "" >> createFolders.js
-          echo "const baseDir = __dirname;" >> createFolders.js
-          echo "const filesPerFolder = 500;" >> createFolders.js
-          echo "" >> createFolders.js
-          echo "async function createFoldersAndCopyFiles() {" >> createFolders.js
-          echo "  try {" >> createFolders.js
-          echo "    const files = await fs.readdir(baseDir);" >> createFolders.js
-          echo "    console.log('Files in directory:', files);" >> createFolders.js
-          echo "    const totalFiles = files.length;" >> createFolders.js
-          echo "    if (totalFiles === 0) {" >> createFolders.js
-          echo "      console.log('No files to copy. Exiting.');" >> createFolders.js
-          echo "      return;" >> createFolders.js
-          echo "    }" >> createFolders.js
-          echo "    let folderIndex = 1;" >> createFolders.js
-          echo "" >> createFolders.js
-          echo "    for (let i = 0; i < totalFiles; i += filesPerFolder) {" >> createFolders.js
-          echo "      const folderName = folderIndex === 1 ? 'session' : \`session\${folderIndex}\`;" >> createFolders.js
-          echo "      const folderPath = path.join(baseDir, folderName);" >> createFolders.js
-          echo "" >> createFolders.js
-          echo "      await fs.mkdir(folderPath, { recursive: true });" >> createFolders.js
-          echo "      console.log(\`Created folder: \${folderName}\`);" >> createFolders.js
-          echo "" >> createFolders.js
-          echo "      const filesToCopy = files.slice(i, i + filesPerFolder);" >> createFolders.js
-          echo "      for (const file of filesToCopy) {" >> createFolders.js
-          echo "        const srcFilePath = path.join(baseDir, file);" >> createFolders.js
-          echo "        const destFilePath = path.join(folderPath, file);" >> createFolders.js
-          echo "        await fs.copyFile(srcFilePath, destFilePath);" >> createFolders.js
-          echo "        console.log(\`Copied \${file} to \${folderName}\`);" >> createFolders.js
-          echo "      }" >> createFolders.js
-          echo "      folderIndex++;" >> createFolders.js
-          echo "    }" >> createFolders.js
-          echo "  } catch (err) {" >> createFolders.js
-          echo "    console.error('Error:', err);" >> createFolders.js
-          echo "  }" >> createFolders.js
-          echo "}" >> createFolders.js
-          echo "" >> createFolders.js
-          echo "createFoldersAndCopyFiles();" >> createFolders.js
+          # Create folders for organized files
+          mkdir -p organized_files/folder_1
+          mkdir -p organized_files/folder_2
 
-      - name: Run createFolders.js
-        run: node createFolders.js
+          # Move the first 500 files to folder_1
+          ls session | head -n 500 | xargs -I {} mv session/{} session_1/
 
-      - name: Commit and push changes
+          # Move the next 500 files to folder_2
+          ls session | head -n 1000 | tail -n 500 | xargs -I {} mv session/{} session_2/
+          ls session | head -n 1500 | tail -n 1000 | xargs -I {} mv session/{} session_3/
+          # Optionally, you can add more folders and move more files as needed
+
+      - name: Commit changes
         run: |
-          git config --local user.email "your-email@example.com"
-          git config --local user.name "Your Name"
-          git add session*/  
-          git commit -m "Add created session folders and copied files" || echo "No changes to commit"
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add organized_files
+          git commit -m "Organized files into folders" || echo "No changes to commit"
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
