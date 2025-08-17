@@ -14,41 +14,42 @@ jobs:
         with:
           node-version: '20' # Specify Node.js version 20
 
-      - name: Create session folders and copy files
+      - name: Create createFolders.js
         run: |
-          node -e "
-          const fs = require('fs').promises; 
-          const path = require('path');
+          echo "const fs = require('fs').promises;" > createFolders.js
+          echo "const path = require('path');" >> createFolders.js
+          echo "" >> createFolders.js
+          echo "const baseDir = path.join(__dirname, 'session');" >> createFolders.js
+          echo "const filesPerFolder = 500;" >> createFolders.js
+          echo "" >> createFolders.js
+          echo "async function createFoldersAndCopyFiles() {" >> createFolders.js
+          echo "  try {" >> createFolders.js
+          echo "    const files = await fs.readdir(baseDir);" >> createFolders.js
+          echo "    const totalFiles = files.length;" >> createFolders.js
+          echo "    let folderIndex = 1;" >> createFolders.js
+          echo "" >> createFolders.js
+          echo "    for (let i = 0; i < totalFiles; i += filesPerFolder) {" >> createFolders.js
+          echo "      const folderName = folderIndex === 1 ? 'session' : \`session\${folderIndex}\`;" >> createFolders.js
+          echo "      const folderPath = path.join(baseDir, folderName);" >> createFolders.js
+          echo "" >> createFolders.js
+          echo "      await fs.mkdir(folderPath, { recursive: true });" >> createFolders.js
+          echo "      console.log(\`Created folder: \${folderName}\`);" >> createFolders.js
+          echo "" >> createFolders.js
+          echo "      const filesToCopy = files.slice(i, i + filesPerFolder);" >> createFolders.js
+          echo "      for (const file of filesToCopy) {" >> createFolders.js
+          echo "        const srcFilePath = path.join(baseDir, file);" >> createFolders.js
+          echo "        const destFilePath = path.join(folderPath, file);" >> createFolders.js
+          echo "        await fs.copyFile(srcFilePath, destFilePath);" >> createFolders.js
+          echo "        console.log(\`Copied \${file} to \${folderName}\`);" >> createFolders.js
+          echo "      }" >> createFolders.js
+          echo "      folderIndex++;" >> createFolders.js
+          echo "    }" >> createFolders.js
+          echo "  } catch (err) {" >> createFolders.js
+          echo "    console.error('Error:', err);" >> createFolders.js
+          echo "  }" >> createFolders.js
+          echo "}" >> createFolders.js
+          echo "" >> createFolders.js
+          echo "createFoldersAndCopyFiles();" >> createFolders.js
 
-          const baseDir = path.join(__dirname, 'session');
-          const filesPerFolder = 500;
-
-          async function createFoldersAndCopyFiles() {
-            try {
-              const files = await fs.readdir(baseDir);
-              const totalFiles = files.length;
-              let folderIndex = 1;
-
-              for (let i = 0; i < totalFiles; i += filesPerFolder) {
-                const folderName = folderIndex === 1 ? 'session' : `session${folderIndex}`;
-                const folderPath = path.join(baseDir, folderName);
-
-                await fs.mkdir(folderPath, { recursive: true });
-                console.log(`Created folder: ${folderName}`);
-                
-                const filesToCopy = files.slice(i, i + filesPerFolder);
-                for (const file of filesToCopy) {
-                  const srcFilePath = path.join(baseDir, file);
-                  const destFilePath = path.join(folderPath, file);
-                  await fs.copyFile(srcFilePath, destFilePath);
-                  console.log(`Copied ${file} to ${folderName}`);
-                }
-                folderIndex++;
-              }
-            } catch (err) {
-              console.error('Error:', err);
-            }
-          }
-
-          createFoldersAndCopyFiles();
-          "
+      - name: Run createFolders.js
+        run: node createFolders.js
