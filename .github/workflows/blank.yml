@@ -19,7 +19,7 @@ jobs:
           echo "const fs = require('fs').promises;" > createFolders.js
           echo "const path = require('path');" >> createFolders.js
           echo "" >> createFolders.js
-          echo "const baseDir = path.join(__dirname, 'session');" >> createFolders.js
+          echo "const baseDir = __dirname;" >> createFolders.js
           echo "const filesPerFolder = 500;" >> createFolders.js
           echo "" >> createFolders.js
           echo "async function createFoldersAndCopyFiles() {" >> createFolders.js
@@ -56,12 +56,10 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          git config --local user.email "pakaraaja@example.com"
-          git config --local user.name "pakaya"
-          git add session/
-          git add session2/
-          git add session3/
-          git commit -m "Add created session folders and copied files"
+          git config --local user.email "your-email@example.com"
+          git config --local user.name "Your Name"
+          git add session*/  # Add all session folders dynamically
+          git commit -m "Add created session folders and copied files" || echo "No changes to commit"
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
