@@ -58,7 +58,9 @@ jobs:
         run: |
           git config --local user.email "pakaraaja@example.com"
           git config --local user.name "pakaya"
-          git add /
+          git add session/
+          git add session2/
+          git add session3/
           git commit -m "Add created session folders and copied files"
           git push
         env:
