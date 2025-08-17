@@ -20,25 +20,26 @@ jobs:
 
       - name: Create session folders
         run: |
-          const fs = require('fs');
-          const path = require('path');
+          echo "const fs = require('fs');" > createFolders.js
+          echo "const path = require('path');" >> createFolders.js
+          echo "const baseDir = path.join(__dirname, 'session');" >> createFolders.js
+          echo "const filesPerFolder = 500;" >> createFolders.js
+          echo "fs.promises.readdir(baseDir)" >> createFolders.js
+          echo "  .then(files => {" >> createFolders.js
+          echo "    const totalFiles = files.length;" >> createFolders.js
+          echo "    let folderIndex = 1;" >> createFolders.js
+          echo "" >> createFolders.js
+          echo "    for (let i = 0; i < totalFiles; i += filesPerFolder) {" >> createFolders.js
+          echo "      const folderName = folderIndex === 1 ? 'session' : \`session\${folderIndex}\`;" >> createFolders.js
+          echo "      const folderPath = path.join(baseDir, folderName);" >> createFolders.js
+          echo "      fs.promises.mkdir(folderPath, { recursive: true })" >> createFolders.js
+          echo "        .then(() => {" >> createFolders.js
+          echo "          console.log(\`Created folder: \${folderName}\`);" >> createFolders.js
+          echo "        });" >> createFolders.js
+          echo "      folderIndex++;" >> createFolders.js
+          echo "    }" >> createFolders.js
+          echo "  })" >> createFolders.js
+          echo "  .catch(err => console.error('Error reading directory:', err));" >> createFolders.js
 
-          const baseDir = path.join(__dirname, 'session'); // Base directory
-          const filesPerFolder = 500; // Number of files per folder
-
-          fs.promises.readdir(baseDir)
-            .then(files => {
-              const totalFiles = files.length;
-              let folderIndex = 1;
-
-              for (let i = 0; i < totalFiles; i += filesPerFolder) {
-                  const folderName = folderIndex === 1 ? 'session' : `session${folderIndex}`;
-                  const folderPath = path.join(baseDir, folderName);
-                  fs.promises.mkdir(folderPath, { recursive: true })
-                    .then(() => {
-                      console.log(`Created folder: ${folderName}`);
-                    });
-                  folderIndex++;
-              }
-            })
-            .catch(err => console.error('Error reading directory:', err));
+          # Run the Node.js script
+          node createFolders.js
