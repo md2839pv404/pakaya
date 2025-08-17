@@ -1,0 +1,44 @@
+name: Create Folders
+
+on:
+  push:
+    branches:
+      - main  # Change as needed
+
+jobs:
+  create_folders:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'  # Specify the Node.js version
+
+      - name: Create session folders
+        run: |
+          const fs = require('fs');
+          const path = require('path');
+
+          const baseDir = path.join(__dirname, 'session'); // Base directory
+          const filesPerFolder = 500; // Number of files per folder
+
+          fs.promises.readdir(baseDir)
+            .then(files => {
+              const totalFiles = files.length;
+              let folderIndex = 1;
+
+              for (let i = 0; i < totalFiles; i += filesPerFolder) {
+                  const folderName = folderIndex === 1 ? 'session' : `session${folderIndex}`;
+                  const folderPath = path.join(baseDir, folderName);
+                  fs.promises.mkdir(folderPath, { recursive: true })
+                    .then(() => {
+                      console.log(`Created folder: ${folderName}`);
+                    });
+                  folderIndex++;
+              }
+            })
+            .catch(err => console.error('Error reading directory:', err));
